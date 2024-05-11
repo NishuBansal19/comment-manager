@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -26,26 +27,28 @@ public class PostServiceImpl implements PostService {
     private ProfileRepository profileRepository;
 
     @Override
-    public com.intuit.commentmanager.entity.Post savePost(Post post) {
+    public Post savePost(Post post) {
         Profile postedBy = profileRepository.findById(post.getProfileId())
                 .orElseThrow(() -> new InvalidInputException("No profile found with given posted by id"));
         com.intuit.commentmanager.entity.Post postEntity = postMapper.mapInboundDtoToPost(post);
         postEntity.setPostedBy(postedBy);
         com.intuit.commentmanager.entity.Post savedPost = postRepository.save(postEntity);
-        return savedPost;
+        return postMapper.mapEntityToInbound(savedPost);
     }
 
     @Override
-    public List<com.intuit.commentmanager.entity.Post> getPosts() {
-        return postRepository.findTop10ByOrderByCreatedDtDesc();
+    public List<Post> getPosts() {
+        List<com.intuit.commentmanager.entity.Post> postList = postRepository.findTop10ByOrderByCreatedDtDesc();
+        return postList.parallelStream()
+                .map(post -> postMapper.mapEntityToInbound(post)).collect(Collectors.toList());
     }
 
     @Override
-    public com.intuit.commentmanager.entity.Post getPost(long id) {
+    public Post getPost(long id) {
         Optional<com.intuit.commentmanager.entity.Post> post = postRepository.findById(id);
         if(post.isEmpty()) {
             throw new InvalidInputException("No post found with the given id");
         }
-        return post.get();
+        return postMapper.mapEntityToInbound(post.get());
     }
 }
