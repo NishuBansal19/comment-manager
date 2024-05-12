@@ -9,6 +9,7 @@ import com.intuit.commentmanager.repository.ProfileRepository;
 import com.intuit.commentmanager.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,10 +46,20 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post getPost(long id) {
-        Optional<com.intuit.commentmanager.entity.Post> post = postRepository.findById(id);
-        if(post.isEmpty()) {
+        Optional<com.intuit.commentmanager.entity.Post> postOptional = postRepository.findById(id);
+        if(postOptional.isEmpty()) {
             throw new InvalidInputException("No post found with the given id");
         }
-        return postMapper.mapEntityToInbound(post.get());
+        com.intuit.commentmanager.entity.Post post = postOptional.get();
+        // this is not required, client can always fetch comment using post id
+        boolean hasComment = !CollectionUtils.isEmpty(post.getCommentsOnPost());
+        Post postDto = postMapper.mapEntityToInbound(postOptional.get());
+        postDto.setComments(hasComment);
+        return postDto;
+    }
+
+    @Override
+    public void deletePostById(long id) {
+        postRepository.deleteById(id);
     }
 }

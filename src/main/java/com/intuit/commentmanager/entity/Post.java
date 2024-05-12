@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 
 @Data
@@ -30,4 +31,7 @@ public class Post implements Serializable {
     @LastModifiedDate
     @Column(name = "updated_dt")
     private Date updatedDt;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "post")
+    private Collection<Comment> commentsOnPost;
 }

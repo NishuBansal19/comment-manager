@@ -1,6 +1,8 @@
 package com.intuit.commentmanager.configurations;
 
 import com.intuit.commentmanager.dto.APIError;
+import com.intuit.commentmanager.exceptions.ActionNotAllowedException;
+import com.intuit.commentmanager.exceptions.CommentNotAllowedException;
 import com.intuit.commentmanager.exceptions.InvalidInputException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,15 @@ public class EntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidInputException.class)
-    private ResponseEntity<APIError> handleInvalidInputException(InvalidInputException ex) {return badRequest(ex.getMessage());
+    private ResponseEntity<APIError> handleException(InvalidInputException ex) {return badRequest(ex.getMessage());
+    }
+
+    @ExceptionHandler(CommentNotAllowedException.class)
+    private ResponseEntity<APIError> handleException(CommentNotAllowedException ex) {return badRequest(ex.getMessage());
+    }
+
+    @ExceptionHandler(ActionNotAllowedException.class)
+    private ResponseEntity<APIError> handleException(ActionNotAllowedException ex) {return badRequest(ex.getMessage());
     }
 
 }

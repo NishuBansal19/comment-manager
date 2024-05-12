@@ -40,12 +40,10 @@ CREATE TABLE IF NOT EXISTS public.comment (
           ON DELETE CASCADE
 );
 
-CREATE TYPE action_type AS ENUM ('LIKE', 'DISLIKE');
-
 CREATE TABLE IF NOT EXISTS public.viewer_action (
     id SERIAL PRIMARY KEY,
     action_by integer NOT NULL,
-    current_action action_type,
+    action_type character varying(255) NOT NULL,
     comment_id integer NOT NULL,
     created_dt time without time zone NOT NULL,
     updated_dt time without time zone,
@@ -58,3 +56,5 @@ CREATE TABLE IF NOT EXISTS public.viewer_action (
           REFERENCES comment(id)
           ON DELETE CASCADE
 );
+
+-- TODO action_by and comment_id should be unique

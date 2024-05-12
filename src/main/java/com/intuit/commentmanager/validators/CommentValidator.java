@@ -20,7 +20,7 @@ public class CommentValidator {
         if(StringUtils.isBlank(comment.getContent())) {
             throw new CommentNotAllowedException("Comment content can not be null");
         } else if(comment.getPostId() <=0 || comment.getProfileId() <= 0) {
-            throw new CommentNotAllowedException("Please check the post and profile");
+            throw new CommentNotAllowedException("Please select the correct post and profile");
         }
         if(comment.getId() > 0) {
             validateCommentOwner(comment.getId(), comment.getProfileId());

@@ -19,6 +19,5 @@ public class Post {
     private Date createdDate;
     private Date modifiedDate;
 
-    private int commentCount;
-    private List<Comment> commentList;
+    private boolean comments;
 }
