@@ -1,7 +1,9 @@
 package com.intuit.commentmanager.service.impl;
 
 
+import com.intuit.commentmanager.cache.ActionCacheService;
 import com.intuit.commentmanager.dto.inbound.ActionInput;
+import com.intuit.commentmanager.dto.outbound.ActionCount;
 import com.intuit.commentmanager.dto.outbound.BasicProfileDetails;
 import com.intuit.commentmanager.entity.Comment;
 import com.intuit.commentmanager.entity.Post;
@@ -16,7 +18,9 @@ import com.intuit.commentmanager.repository.ProfileRepository;
 import com.intuit.commentmanager.repository.ViewerActionRepository;
 import com.intuit.commentmanager.service.ViewerActionService;
 import com.intuit.commentmanager.validators.ActionValidator;
+import org.hibernate.annotations.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -49,6 +53,9 @@ public class ViewerActionServiceImpl implements ViewerActionService {
 
     @Autowired
     private ProfileMapper profileMapper;
+
+    @Autowired
+    private ActionCacheService actionCacheService;
 
     @Override
     public String setAction(ActionInput actionInput) {
@@ -85,6 +92,7 @@ public class ViewerActionServiceImpl implements ViewerActionService {
             viewerActionRepository.save(viewerAction);
             res = actionType.name().toLowerCase() + " successfully";
         }
+        actionCacheService.updateActionCount(actionInput.getCommentId());
         return res;
     }
 
@@ -94,6 +102,11 @@ public class ViewerActionServiceImpl implements ViewerActionService {
         Page<ViewerAction> viewerActions = viewerActionRepository.findReplyCommentByParentCommentId(commentId,
                 actionType.name(), PageRequest.of(0, 5, Sort.Direction.DESC, "createdDt"));
         return viewerActions.map(viewerAction-> profileMapper.mapProfileToBasicProfile(viewerAction.getActionBy()));
+    }
+
+    @Override
+    public ActionCount getActionCount(long commentId) {
+        return actionCacheService.getActionCount(commentId);
     }
 
     @Override

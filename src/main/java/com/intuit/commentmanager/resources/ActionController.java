@@ -1,8 +1,10 @@
 package com.intuit.commentmanager.resources;
 
 import com.intuit.commentmanager.dto.inbound.ActionInput;
+import com.intuit.commentmanager.dto.outbound.ActionCount;
 import com.intuit.commentmanager.dto.outbound.BasicProfileDetails;
 import com.intuit.commentmanager.service.ViewerActionService;
+import org.hibernate.annotations.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,9 +31,14 @@ public class ActionController {
         return viewerActionService.getAllActions();
     }
 
-    @GetMapping("/profiles/{commentId}")
+    @GetMapping("/comment/{commentId}/profiles")
     public Page<BasicProfileDetails> getAllProfileActedOnComment(@PathVariable long commentId,
                                                                  @RequestParam String action) {
         return viewerActionService.getAllProfileActedOnComment(commentId, action);
+    }
+
+    @GetMapping("/comment/{commentId}/count")
+    public ActionCount getActionCount(@PathVariable long commentId) {
+        return viewerActionService.getActionCount(commentId);
     }
 }

@@ -1,6 +1,7 @@
 package com.intuit.commentmanager.service;
 
 import com.intuit.commentmanager.dto.inbound.ActionInput;
+import com.intuit.commentmanager.dto.outbound.ActionCount;
 import com.intuit.commentmanager.dto.outbound.BasicProfileDetails;
 import org.springframework.data.domain.Page;
 
@@ -15,4 +16,6 @@ public interface ViewerActionService {
     public List<ActionInput> getAllActions();
 
     public Page<BasicProfileDetails> getAllProfileActedOnComment(long commentId, String action);
+
+    public ActionCount getActionCount(long commentId);
 }

@@ -75,6 +75,12 @@
 			<version>1.5.3.Final</version> <!-- Check for the latest version on Maven Central -->
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.10.2</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

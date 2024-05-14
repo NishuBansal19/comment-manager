@@ -19,5 +19,7 @@ public interface ViewerActionRepository extends JpaRepository<ViewerAction, Long
     @Query(value = "SELECT va FROM ViewerAction va where va.comment.id =?1 AND va.actionType=?2")
     Page<ViewerAction> findReplyCommentByParentCommentId(long commentId, String actionType, Pageable pageable);
 
+    @Query(value = "SELECT va FROM ViewerAction va where va.comment.id =?1 AND va.actionType=?2")
+    List<ViewerAction> findReplyCommentByParentCommentId(long commentId, String actionType);
 
 }

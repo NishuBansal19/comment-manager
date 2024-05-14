@@ -45,18 +45,23 @@ public class CommentServiceImpl implements CommentService {
         commentValidator.validateInputComment(comment);
         com.intuit.commentmanager.entity.Comment savedComment = null;
         if(comment.getId() > 0) {
-            savedComment = commentRepository.findById(comment.getId()).get();
-            savedComment.setContent(comment.getContent());
+            commentRepository.findById(comment.getId()).ifPresentOrElse(com-> {
+                com.setContent(comment.getContent());
+            }, () -> {
+                throw new InvalidInputException("Wrong comment Id");
+            });
         } else {
             savedComment = commentMapper.mapInboundToEntity(comment);
-            Post post = postRepository.findById(comment.getPostId()).get();
-            savedComment.setPost(post);
-            Profile profile = profileRepository.findById(comment.getProfileId()).get();
-            savedComment.setCommentedBy(profile);
+            postRepository.findById(comment.getPostId()).ifPresentOrElse(savedComment::setPost, () -> {
+                throw new InvalidInputException("Wrong post Id");
+            });
+            profileRepository.findById(comment.getProfileId()).ifPresentOrElse(savedComment::setCommentedBy, () -> {
+                throw new InvalidInputException("Wrong profile Id");
+            });
             if(comment.getParentCommentId() > 0) {
-                com.intuit.commentmanager.entity.Comment parentComment =
-                        commentRepository.findById(comment.getParentCommentId()).get();
-                savedComment.setParentComment(parentComment);
+                commentRepository.findById(comment.getParentCommentId()).ifPresentOrElse(savedComment::setParentComment, () -> {
+                    throw new InvalidInputException("Wrong parent comment Id");
+                });
             }
         }
         com.intuit.commentmanager.entity.Comment latestComment = commentRepository.save(savedComment);

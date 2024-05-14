@@ -1,7 +1,9 @@
 package com.intuit.commentmanager.mappers;
 
+import com.intuit.commentmanager.cache.ActionCacheService;
 import com.intuit.commentmanager.entity.Comment;
 import com.intuit.commentmanager.repository.CommentRepository;
+import com.intuit.commentmanager.service.ViewerActionService;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +19,16 @@ public abstract class CommentMapper {
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    ActionCacheService actionCacheService;
+
     @Mapping(target = "createdDt", expression = "java(new Date())")
     public abstract Comment mapInboundToEntity(com.intuit.commentmanager.dto.inbound.Comment comment);
 
     @Mapping(target = "createdDate", source = "createdDt")
     @Mapping(target = "modifiedDate", source = "updatedDt")
+    @Mapping(target = "userName",
+            expression = "java(Optional.ofNullable(comment.getCommentedBy()).map(p -> p.getName()).orElse(null))")
     @Mapping(target = "profileId", expression = "java(Optional.ofNullable(comment.getCommentedBy()).map(p -> p.getId()).orElse(0l))")
     @Mapping(target = "postId", expression = "java(Optional.ofNullable(comment.getPost()).map(p -> p.getId()).orElse(0l))")
     @Mapping(target = "parentCommentId", expression = "java(Optional.ofNullable(comment.getParentComment()).map(p -> p.getId()).orElse(0l))")
@@ -34,6 +41,7 @@ public abstract class CommentMapper {
         List<Comment> childComments = commentRepository.findAnyRowWithIdAsParentId(comment.getId(),
                 PageRequest.of(0, 1));
         boolean hasChildComments = !CollectionUtils.isEmpty(childComments);
+        commentResponse.setActionCount(actionCacheService.getActionCount(comment.getId()));
         commentResponse.setChildCommentPresent(hasChildComments);
     }
 }
