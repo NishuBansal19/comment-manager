@@ -1,0 +1,1 @@
+ALTER TABLE profile ADD column password character varying(255) NOT NULL;

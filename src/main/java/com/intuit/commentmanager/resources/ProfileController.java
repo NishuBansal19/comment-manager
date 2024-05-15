@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -19,10 +20,12 @@ public class ProfileController {
 
     @Autowired
     ProfileRepository profileRepository;
-
+    @Autowired
+    PasswordEncoder passwordEncoder;
     @PostMapping
     public ResponseEntity<Profile> saveProfile(@RequestBody Profile profile) {
         profile.setCreatedDt(new Date());
+        profile.setPassword(passwordEncoder.encode(profile.getPassword()));
         Profile saveProfile = profileRepository.save(profile);
         return new ResponseEntity<>(saveProfile, HttpStatus.OK);
     }
