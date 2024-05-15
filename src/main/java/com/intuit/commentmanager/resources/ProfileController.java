@@ -3,10 +3,10 @@ package com.intuit.commentmanager.resources;
 import com.intuit.commentmanager.entity.Profile;
 import com.intuit.commentmanager.exceptions.InvalidInputException;
 import com.intuit.commentmanager.repository.ProfileRepository;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +22,9 @@ public class ProfileController {
     ProfileRepository profileRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+
     @PostMapping
+    @Operation(summary = "Api to create a new user")
     public ResponseEntity<Profile> saveProfile(@RequestBody Profile profile) {
         profile.setCreatedDt(new Date());
         profile.setPassword(passwordEncoder.encode(profile.getPassword()));
@@ -31,12 +33,14 @@ public class ProfileController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Profile>> getComments() {
+    @Operation(summary = "Api to list all the profiles")
+    public ResponseEntity<List<Profile>> getProfiles() {
         List<Profile> profiles = profileRepository.findAll();
         return new ResponseEntity<>(profiles, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Api to get the profile by id")
     public Profile getProfileById(@PathVariable long id) {
         Optional<Profile> profile = profileRepository.findById(id);
         if(profile.isEmpty()) {

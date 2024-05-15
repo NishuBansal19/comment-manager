@@ -4,6 +4,7 @@ import com.intuit.commentmanager.dto.inbound.LoginUserDto;
 import com.intuit.commentmanager.entity.Profile;
 import com.intuit.commentmanager.repository.ProfileRepository;
 import com.intuit.commentmanager.service.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,7 @@ public class AuthenticationController {
     private ProfileRepository profileRepository;
 
     @PostMapping("/login")
+    @Operation(summary = "Api to authenticate user")
     public ResponseEntity<String> authenticate(@RequestBody LoginUserDto loginUserDto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
